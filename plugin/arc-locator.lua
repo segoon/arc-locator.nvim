@@ -1,7 +1,11 @@
 local vim = vim
 
 local function open_in_arcadia(fname)
-  vim.cmd{cmd = 'edit', args = { fname }}
+  vim.defer_fn(
+    function()
+      vim.cmd{cmd = 'edit', args = { fname }}
+    end,
+  10)
 end
 
 local function on_new_file()
@@ -30,9 +34,4 @@ local function on_new_file()
   )  
 end
 
-vim.api.nvim_create_autocmd(
-  'BufNewFile',
-  {
-    callback=on_new_file,
-  }
-)
+vim.api.nvim_create_autocmd('BufNewFile', {callback=on_new_file})

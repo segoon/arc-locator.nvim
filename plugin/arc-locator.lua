@@ -1,11 +1,12 @@
 local vim = vim
 
-local function open_in_arcadia(fname)
-  vim.defer_fn(
+local function open_in_arcadia(fname, old_bufnr)
+  vim.schedule(
     function()
       vim.cmd{cmd = 'edit', args = { fname }}
-    end,
-  10)
+      vim.api.nvim_buf_delete(old_bufnr, {})
+    end
+  )
 end
 
 local function on_new_file()
@@ -28,10 +29,11 @@ local function on_new_file()
     { prompt = 'Open file in acradia? [Y/n]' },
     function(input)
       if input == '' or input == 'y' or input == 'Y' then
-	open_in_arcadia(fname)
+        bufnr = vim.api.nvim_get_current_buf()
+        open_in_arcadia(fname, bufnr)
       end
     end
-  )  
+  )
 end
 
 vim.api.nvim_create_autocmd('BufNewFile', {callback=on_new_file})
